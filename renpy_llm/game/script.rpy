@@ -9,6 +9,23 @@ init python:
     import urllib.request as urllib2
     import urllib.error as urllib_error
     import ssl
+    import os
+    
+    # Function to get API key from config file
+    def get_api_key():
+        try:
+            # Try to read from config file
+            with open("game/config.txt", "r") as f:
+                for line in f:
+                    if line.startswith("DEEPSEEK_API_KEY="):
+                        return line.split("=", 1)[1].strip()
+        except:
+            pass
+        # Fallback to environment variable
+        api_key = os.environ.get("DEEPSEEK_API_KEY")
+        if api_key:
+            return api_key
+        return ""
     
     # Function to call DeepSeek API
     def call_deepseek_api(prompt, conversation_history):
@@ -18,9 +35,10 @@ init python:
         try:
             # Prepare the API request
             url = "https://api.deepseek.com/v1/chat/completions"
+            api_key = get_api_key()
             headers = {
                 "Content-Type": "application/json",
-                "Authorization": "Bearer sk-a9922c5920874f8b907f5f780b715475"
+                "Authorization": "Bearer " + api_key
             }
             
             # Prepare the conversation history

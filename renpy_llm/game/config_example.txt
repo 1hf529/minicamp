@@ -1,0 +1,5 @@
+# API Configuration Example
+# Copy this file to config.txt and replace with your own API key
+# Then add config.txt to your .gitignore file to prevent uploading sensitive information
+
+DEEPSEEK_API_KEY=your_api_key_here
