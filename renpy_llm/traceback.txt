@@ -1,46 +1,33 @@
 ﻿I'm sorry, but an uncaught exception occurred.
 
 While running game code:
-NameError: name 'e' is not defined
-
-During handling of the above exception, another exception occurred:
-
-Traceback (most recent call last):
-  File "game/script.rpy", line 247, in script
-    e "您已创建了一个新的 Ren'Py 游戏。"
-Exception: Sayer 'e' is not defined.
+  File "game/scenes/start.rpy", line 25, in script
+renpy.display.screen.ScreenNotFound: Screen 'main_menu_screen' is not known.
 
 -- Full Traceback ------------------------------------------------------------
 
 Traceback (most recent call last):
-  File "renpy/ast.py", line 625, in eval_who
-    return renpy.python.py_eval(who)
-           ~~~~~~~~~~~~~~~~~~~~^^^^^
-  File "renpy/python.py", line 1292, in py_eval
-    return py_eval_bytecode(code, globals, locals)
-           ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
-  File "renpy/python.py", line 1285, in py_eval_bytecode
-    return eval(bytecode, globals, locals)
-           ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "<none>", line 1, in <module>
-NameError: name 'e' is not defined
-
-During handling of the above exception, another exception occurred:
-
-Traceback (most recent call last):
-  File "game/script.rpy", line 247, in script
-    e "您已创建了一个新的 Ren'Py 游戏。"
-  File "renpy/ast.py", line 2915, in execute
-    Say.execute(self)
-    ~~~~~~~~~~~^^^^^^
-  File "renpy/ast.py", line 956, in execute
-    who = eval_who(self.who, self.who_fast)
-          ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "renpy/ast.py", line 627, in eval_who
-    raise Exception("Sayer '%s' is not defined." % who)
-Exception: Sayer 'e' is not defined.
+  File "game/scenes/start.rpy", line 25, in script
+  File "renpy/ast.py", line 2231, in execute
+    self.call("execute")
+    ~~~~~~~~~^^^^^^^^^^^
+  File "renpy/ast.py", line 2195, in call
+    return renpy.statements.call(method, parsed, *args, **kwargs)
+           ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "renpy/statements.py", line 379, in call
+    return method(parsed, *args, **kwargs)
+           ~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "renpy/common/000statements.rpy", line 695, in execute_call_screen
+    store._return = renpy.call_screen(name, *args, **kwargs)
+                    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+  File "renpy/exports/statementexports.py", line 334, in call_screen
+    renpy.exports.show_screen(_screen_name, *args, _transient=True, **kwargs)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "renpy/display/screen.py", line 1355, in show_screen
+    raise ScreenNotFound(name[0])
+renpy.display.screen.ScreenNotFound: Screen 'main_menu_screen' is not known.
 
 Linux-6.16.7-arch1-1-x86_64-with-glibc2.42 x86_64
 Ren'Py 8.4.1.25072401
 renpy_llm 1.0
-Sat Sep 20 08:44:32 2025
+Sat Sep 20 10:13:35 2025
