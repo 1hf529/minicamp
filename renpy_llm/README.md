@@ -5,12 +5,14 @@ This project demonstrates how to integrate LLM chat functionality with Ren'Py, c
 ## Project Structure
 
 - `game/script.rpy` - Main game script with LLM integration
+- `AUDIO_INPUT_README.md` - Documentation for audio input implementation
 - `README.md` - This file
 
 ## Features Implemented
 
 - Character-based dialogue system using Ren'Py's native interface
 - Text input for user prompts with Ren'Py's built-in input system
+- Audio input for user prompts using microphone and speech recognition
 - Simulated LLM responses (mock implementation)
 - Conversation history tracking
 - Exit commands ("quit" or "exit")
@@ -20,6 +22,15 @@ This project demonstrates how to integrate LLM chat functionality with Ren'Py, c
 1. Install Ren'Py from https://www.renpy.org/
 2. Open Ren'Py and launch the project
 3. Run the game to test the chat functionality
+
+## Audio Input Support
+
+This demo includes audio input functionality that allows users to interact with the AI using voice commands. For detailed information about the implementation, see `AUDIO_INPUT_README.md`.
+
+The audio input implementation supports:
+- Desktop platforms (Windows, macOS, Linux) using PyAudio and SpeechRecognition libraries
+- Android devices using native SpeechRecognizer API
+- iOS devices using native Speech framework
 
 ## LLM Integration
 
@@ -38,3 +49,4 @@ Example API integration code is included in the comments of the `call_llm_api` f
 - Add support for multiple characters with different personalities
 - Create a more sophisticated UI for the chat interface
 - Add support for other input modalities (voice, image)
+- Enhance audio input capabilities with real-time processing

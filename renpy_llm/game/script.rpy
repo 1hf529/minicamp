@@ -5,126 +5,111 @@ define e = Character("艾琳")
 define ai = Character("AI")
 
 init python:
-    # Import required modules
-    try:
-        # Python 2
-        import urllib2
-        import json
-    except ImportError:
-        # Python 3
-        import urllib.request as urllib2
-        import urllib.error as urllib_error
-        import json
+    import json
+    import urllib.request as urllib2
+    import urllib.error as urllib_error
+    import ssl
     
-    # Global variable to store conversation history
-    conversation_history = []
-    
-    # Function to call LLM API
-    def call_llm_api(prompt):
+    # Function to call DeepSeek API
+    def call_deepseek_api(prompt, conversation_history):
         """
-        This is a placeholder function for calling an LLM API.
-        In a real implementation, you would replace this with actual API calls.
+        Call DeepSeek API to get AI response
         """
-        # Add user prompt to conversation history
-        conversation_history.append("User: " + prompt)
-        
-        # Build the full prompt with conversation history
-        full_prompt = "\n".join(conversation_history) + "\nAI:"
-        
-        # In a real implementation, you would do something like:
-        # For Python 2:
-        # url = "https://api.example.com/llm"  # Replace with actual API endpoint
-        # data = json.dumps({
-        #     "prompt": full_prompt,
-        #     "max_tokens": 150,
-        #     "temperature": 0.7
-        # })
-        # req = urllib2.Request(url, data, {
-        #     'Content-Type': 'application/json',
-        #     'Authorization': 'Bearer YOUR_API_KEY'  # Replace with actual API key
-        # })
-        # response = urllib2.urlopen(req)
-        # result = json.loads(response.read())
-        # response_text = result["response"]
-        #
-        # For Python 3:
-        # import urllib.request
-        # import urllib.error
-        # url = "https://api.example.com/llm"  # Replace with actual API endpoint
-        # data = json.dumps({
-        #     "prompt": full_prompt,
-        #     "max_tokens": 150,
-        #     "temperature": 0.7
-        # }).encode('utf-8')
-        # req = urllib.request.Request(url, data, {
-        #     'Content-Type': 'application/json',
-        #     'Authorization': 'Bearer YOUR_API_KEY'  # Replace with actual API key
-        # })
-        # try:
-        #     response = urllib.request.urlopen(req)
-        #     result = json.loads(response.read().decode('utf-8'))
-        #     response_text = result["response"]
-        # except urllib.error.URLError as e:
-        #     response_text = "Error connecting to API: " + str(e)
-        
-        # This is just a mock response for demonstration purposes
-        mock_responses = [
-            "Hello! How can I assist you today?",
-            "That's an interesting question. Let me think about it.",
-            "I understand what you're asking. Here's my perspective.",
-            "Thanks for sharing that with me. What else would you like to discuss?",
-            "I'm here to help with any questions you might have."
-        ]
-        
-        # For now, we'll just return a mock response
-        import random
-        response_text = random.choice(mock_responses)
-        
-        # Add AI response to conversation history
-        conversation_history.append("AI: " + response_text)
-        
-        return response_text
+        try:
+            # Prepare the API request
+            url = "https://api.deepseek.com/v1/chat/completions"
+            headers = {
+                "Content-Type": "application/json",
+                "Authorization": "Bearer sk-a9922c5920874f8b907f5f780b715475"
+            }
+            
+            # Prepare the conversation history
+            messages = []
+            # Add system message
+            messages.append({"role": "system", "content": "You are a helpful AI assistant."})
+            
+            # Add conversation history
+            for entry in conversation_history:
+                if entry.startswith("User: "):
+                    messages.append({"role": "user", "content": entry[6:]})
+                elif entry.startswith("AI: "):
+                    messages.append({"role": "assistant", "content": entry[5:]})
+            
+            # Add the current user prompt
+            messages.append({"role": "user", "content": prompt})
+            
+            # Prepare the data
+            data = {
+                "model": "deepseek-chat",
+                "messages": messages,
+                "max_tokens": 500,
+                "temperature": 0.7
+            }
+            
+            # Convert to JSON
+            json_data = json.dumps(data).encode('utf-8')
+            
+            # Create SSL context that doesn't verify certificates (for testing)
+            # Note: In production, you should properly configure certificates
+            context = ssl.create_default_context()
+            context.check_hostname = False
+            context.verify_mode = ssl.CERT_NONE
+            
+            # Create request
+            req = urllib2.Request(url, json_data, headers)
+            
+            # Send request with SSL context
+            response = urllib2.urlopen(req, context=context)
+            
+            # Read response
+            response_data = response.read().decode('utf-8')
+            
+            # Parse JSON
+            response_json = json.loads(response_data)
+            
+            # Extract the response text
+            response_text = response_json["choices"][0]["message"]["content"]
+            
+            return response_text
+            
+        except Exception as e:
+            # Fallback to mock response if API fails
+            print("DeepSeek API call failed: " + str(e))
+            return "抱歉，我暂时无法回答您的问题。请稍后再试。"
 
-# 游戏在此开始。
 label start:
-    # 显示一个背景。此处默认显示占位图，但您也可以在图片目录添加一个文件
-    # （命名为 bg room.png 或 bg room.jpg）来显示。
-    scene bg room
-    
-    # 显示角色立绘。此处使用了占位图，但您也可以在图片目录添加命名为
-    # eileen happy.png 的文件来将其替换掉。
-    show eileen happy
-    
-    # 此处显示各行对话。
     e "您已创建了一个新的 Ren'Py 游戏。"
     e "现在我们将演示如何与AI进行对话。"
     
-    # 初始化对话历史
+    # Initialize conversation history
     $ conversation_history = []
     
-    # 进入对话循环
-    call chat_loop from _call_chat_loop
+    # Enter chat loop
+    call chat_loop
 
-# Chat loop
 label chat_loop:
-    # 获取用户输入
+    # Get user input
     $ user_input = renpy.input("您: ", length=100)
     
-    # 检查用户是否想要退出
+    # Check if user wants to exit
     if user_input.lower() == "quit" or user_input.lower() == "exit":
         ai "再见！感谢与我聊天。"
         return
     
-    # 处理空输入
+    # Handle empty input
     if user_input.strip() == "":
         ai "请输入一条消息。"
         jump chat_loop
     
-    # 调用LLM API（使用模拟函数）
-    $ ai_response = call_llm_api(user_input)
+    # Call DeepSeek API
+    $ ai_response = call_deepseek_api(user_input, conversation_history)
     
-    # 显示AI响应
+    # Add to conversation history
+    $ conversation_history.append("User: " + user_input)
+    $ conversation_history.append("AI: " + ai_response)
+    
+    # Display AI response
     ai "[ai_response]"
     
-    # 继续对话循环
+    # Continue chat loop
     jump chat_loop
